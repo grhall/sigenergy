@@ -71,4 +71,4 @@ def poll():
 
 while True:
     poll()
-    time.sleep(30)
+    time.sleep(15)
