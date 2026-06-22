@@ -21,7 +21,7 @@ ENTITIES = {
     "battery_soc":   "sensor.sigen_plant_battery_state_of_charge",
     "grid_power":    "sensor.sigen_plant_grid_active_power",
     "load_power":    "sensor.sigen_plant_total_load_power",
-    "ev_power":      "sensor.sigen_plant_ev_charger_active_power",
+    "ev_power":      "sensor.zappi_22253240_myenergi_zappi_22253240_internal_load_ct1",
     "plant_active_power": "sensor.sigen_plant_plant_active_power",
 }
 
