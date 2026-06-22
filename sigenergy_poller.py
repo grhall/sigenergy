@@ -21,6 +21,8 @@ ENTITIES = {
     "battery_soc":   "sensor.sigen_plant_battery_state_of_charge",
     "grid_power":    "sensor.sigen_plant_grid_active_power",
     "load_power":    "sensor.sigen_plant_total_load_power",
+    "ev_power":      "sensor.sigen_plant_ev_charger_active_power",
+    "plant_active_power": "sensor.sigen_plant_plant_active_power",
 }
 
 def get_state(entity_id):
@@ -42,14 +44,16 @@ def write_row(values):
         )
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO sigenergy (ts, pv_power, battery_power, battery_soc, grid_power, load_power)
-            VALUES (NOW(), %s, %s, %s, %s, %s)
+            INSERT INTO sigenergy (ts, pv_power, battery_power, battery_soc, grid_power, load_power, true_load_power, ev_power)
+            VALUES (NOW(), %s, %s, %s, %s, %s, %s, %s)
         """, (
             values["pv_power"],
             values["battery_power"],
             values["battery_soc"],
             values["grid_power"],
             values["load_power"],
+            values["true_load_power"],
+            values["ev_power"], 
         ))
         conn.commit()
         cursor.close()
@@ -65,6 +69,9 @@ def poll():
     if None in values.values():
         print("Skipping write — one or more entities unavailable")
         return
+
+    battery_self_use = -(values["plant_active_power"] + values["battery_power"])   # ≈ 0.1 kW, computed fresh each poll
+    values["true_load_power"] = values["load_power"] + battery_self_use
 
     write_row(values)
     print(f"Written: {values}")
